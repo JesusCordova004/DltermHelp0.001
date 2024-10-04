@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta Agent Assistant</title>
+    <!-- Font Awesome for icons and Google Fonts for typography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            overflow-x: hidden;
+        }
+
+        /* Full-screen Hero Section */
+        .hero {
+            background: url('https://images.unsplash.com/photo-1516239012145-48f07a5c71b4?fit=crop&w=1920&q=80') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .hero h3 {
+            font-size: 1.5em;
+            margin-top: 10px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Floating Plane Animation */
+        .plane-animation {
+            position: absolute;
+            bottom: 20px;
+            right: 50px;
+            font-size: 5em;
+            color: rgba(255, 255, 255, 0.9);
+            animation: fly 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fly {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-30px) translateY(-10px); }
+        }
+
+        /* Header for Search */
+        .header {
+            background-color: rgba(28, 181, 224, 0.9);
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+        }
+
+        .header input {
+            width: 50%;
+            padding: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            max-width: 500px;
+            color: #1CB5E0;
+            text-align: center;
+            transition: all 0.3s;
+            outline: none;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header input:focus {
+            width: 60%;
+            max-width: 600px;
+        }
+
+        .header button {
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #1CB5E0;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .header button:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Search Suggestion Box */
+        .suggestions {
+            position: absolute;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            max-width: 500px;
+            z-index: 101;
+            padding: 10px;
+        }
+
+        .suggestions div {
+            padding: 12px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .suggestions div:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Main Content After Hero */
+        .main-content {
+            margin-top: 120px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2, h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 40px;
+            background-color: #1CB5E0;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #000851;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Card-Based Section Boxes */
+        .section-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.6s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .dropdown {
+            width: 100%;
+            padding: 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-top: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .header input {
+                width: 80%;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero h3 {
+                font-size: 1.2em;
+            }
+
+            .plane-animation {
+                font-size: 4em;
+                right: 20px;
+            }
+
+            .section-box {
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .hero h3 {
+                font-size: 1.1em;
+            }
+
+            .header input {
+                width: 85%;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 12px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full-Screen Hero Section -->
+    <div class="hero">
+        <h1>Welcome to the Delta Agent Assistant</h1>
+        <h3>Effortless Assistance for Your Airline Needs</h3>
+        <i class="fas fa-plane plane-animation"></i>
+    </div>
+
+    <!-- Fixed Header for Search Bar -->
+    <div class="header">
+        <input type="text" id="search-input" placeholder="Search system..." oninput="showSuggestions()" onkeypress="handleKeyPress(event)">
+        <div class="suggestions hidden" id="suggestions"></div>
+        <button onclick="searchSystem()">Search</button>
+    </div>
+
+    <!-- Main Content (Cards with Dropdowns) -->
+    <div class="main-content">
+        
+        <div class="section-box" id="greeting-section">
+            <label for="name">Please enter your name:</label><br>
+            <input type="text" id="name" placeholder="Your name" style="padding: 10px; width: 100%; margin-top: 10px;"><br>
+            <button class="gradient-btn" onclick="startProgram()">Start</button>
+        </div>
+
+        <div class="section-box hidden" id="menu-section">
+            <h2>Hello Delta Agent <span id="agent-name"></span>, please choose a service:</h2>
+            <select class="dropdown" id="service-dropdown" onchange="showServiceOptions()">
+                <option value="" disabled selected>Select a service</option>
+                <option value="ticketing">Ticketing</option>
+                <option value="baggage">Baggage</option>
+            </select>
+        </div>
+
+        <div class="section-box hidden" id="ticketing-section">
+            <h3>Ticketing Options</h3>
+            <select class="dropdown" id="ticketing-dropdown" onchange="handleTicketing()">
+                <option value="" disabled selected>Select an option</option>
+                <option value="boarding">Boarding Pass</option>
+                <option value="reissue">Re-issue a Boarding Pass</option>
+            </select>
+            <div id="ticketing-result"></div>
+            <button class="gradient-btn hidden" id="ticketing-done" onclick="returnToMainMenu()">Done</button>
+        </div>
+
+        <div class="section-box hidden" id="baggage-section">
+            <h3>Baggage Options</h3>
+            <select class="dropdown" id="baggage-dropdown" onchange="handleBaggage()">
+                <option value="" disabled selected>Select an option</option>
+                <option value="search">Search a Bag / Research</option>
+                <option value="destroy">Destroy a Bag Tag</option>
+                <option value="recheck">Recheck a Bag</option>
+            </select>
+            <div id="baggage-result"></div>
+            <button class="gradient-btn hidden" id="baggage-done" onclick="returnToMainMenu()">Done</button>
+        </div>
+    </div>
+
+    <script>
+        const searchTerms = [
+            "boarding pass", "reissue", "search bag", "destroy tag", "recheck bag"
+        ];
+
+        function startProgram() {
+            const nameInput = document.getElementById('name').value;
+            if (nameInput) {
+                document.getElementById('agent-name').innerText = nameInput;
+                document.getElementById('greeting-section').classList.add('hidden');
+                document.getElementById('menu-section').classList.remove('hidden');
+            } else {
+                alert("Please enter your name.");
+            }
+        }
+
+        function showServiceOptions() {
+            const service = document.getElementById('service-dropdown').value;
+            if (service === "ticketing") {
+                document.getElementById('ticketing-section').classList.remove('hidden');
+                document.getElementById('baggage-section').classList.add('hidden');
+            } else if (service === "baggage") {
+                document.getElementById('baggage-section').classList.remove('hidden');
+                document.getElementById('ticketing-section').classList.add('hidden');
+            }
+        }
+
+        function handleTicketing() {
+            const option = document.getElementById('ticketing-dropdown').value;
+            let result = option === "boarding" ? "Simple Printing (A*B) or Printing override (A*BO)" 
+                                                : "Re-Issue regular ($*RXS1*1.1) or IROP ($*RIS1*1.1)";
+            document.getElementById('ticketing-result').innerText = result;
+            document.getElementById('ticketing-done').classList.remove('hidden');
+        }
+
+        function handleBaggage() {
+            const option = document.getElementById('baggage-dropdown').value;
+            let result = option === "search" ? "Use PBTS*bagtag. For history, click 'Track' and 'PgDn' or type 'MD'. ¥ for more info." 
+                                              : option === "destroy" ? "Use PBTS*bagtag, then click 'Clear' and type 'DES' to destroy the tag." 
+                                              : "Recheck to send a bag back to baggage claim unless international or pax not flying. Use Y/N for late check-in.";
+            document.getElementById('baggage-result').innerText = result;
+            document.getElementById('baggage-done').classList.remove('hidden');
+        }
+
+        function returnToMainMenu() {
+            document.getElementById('ticketing-section').classList.add('hidden');
+            document.getElementById('baggage-section').classList.add('hidden');
+            document.getElementById('menu-section').classList.remove('hidden');
+            document.getElementById('ticketing-result').innerText = '';
+            document.getElementById('baggage-result').innerText = '';
+            document.getElementById('ticketing-done').classList.add('hidden');
+            document.getElementById('baggage-done').classList.add('hidden');
+        }
+
+        // Search Functionality with Autocomplete Suggestions
+        function showSuggestions() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const suggestionsBox = document.getElementById('suggestions');
+            suggestionsBox.innerHTML = ''; // Clear previous suggestions
+            const matchedTerms = searchTerms.filter(term => term.includes(query));
+            if (matchedTerms.length > 0 && query !== '') {
+                suggestionsBox.classList.remove('hidden');
+                matchedTerms.forEach(term => {
+                    const suggestion = document.createElement('div');
+                    suggestion.textContent = term;
+                    suggestion.onclick = () => {
+                        document.getElementById('search-input').value = term;
+                        suggestionsBox.classList.add('hidden');
+                        searchSystem(); // Perform search automatically when clicked
+                    };
+                    suggestionsBox.appendChild(suggestion);
+                });
+            } else {
+                suggestionsBox.classList.add('hidden');
+            }
+        }
+
+        function searchSystem() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            if (query.includes("boarding pass") || query.includes("printing")) {
+                document.getElementById('ticketing-section').classList.remove('hidden');
+                document.getElementById('menu-section').classList.add('hidden');
+                document.getElementById('ticketing-result').innerText = "Simple Printing (A*B) or Printing override (A*BO)";
+                document.getElementById('ticketing-done').classList.remove('hidden');
+            } else if (query.includes("reissue") || query.includes("re-issue")) {
+                document.getElementById('ticketing-section').classList.remove('hidden');
+                document.getElementById('menu-section').classList.add('hidden');
+                document.getElementById('ticketing-result').innerText = "Re-Issue regular ($*RXS1*1.1) or IROP ($*RIS1*1.1)";
+                document.getElementById('ticketing-done').classList.remove('hidden');
+            } else if (query.includes("search") || query.includes("bag")) {
+                document.getElementById('baggage-section').classList.remove('hidden');
+                document.getElementById('menu-section').classList.add('hidden');
+                document.getElementById('baggage-result').innerText = "Use PBTS*bagtag. For history, click 'Track' and 'PgDn' or type 'MD'. ¥ for more info.";
+                document.getElementById('baggage-done').classList.remove('hidden');
+            } else if (query.includes("destroy")) {
+                document.getElementById('baggage-section').classList.remove('hidden');
+                document.getElementById('menu-section').classList.add('hidden');
+                document.getElementById('baggage-result').innerText = "Use PBTS*bagtag, then click 'Clear' and type 'DES' to destroy the tag.";
+                document.getElementById('baggage-done').classList.remove('hidden');
+            } else if (query.includes("recheck")) {
+                document.getElementById('baggage-section').classList.remove('hidden');
+                document.getElementById('menu-section').classList.add('hidden');
+                document.getElementById('baggage-result').innerText = "Recheck to send a bag back to baggage claim unless international or pax not flying. Use Y/N for late check-in.";
+                document.getElementById('baggage-done').classList.remove('hidden');
+            } else {
+                alert("No results found for your search.");
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                searchSystem();
+            }
+        }
+    </script>
+
+</body>
+</html>
